@@ -16,6 +16,7 @@ import type {
 } from "@/lib/types";
 
 const contentId = "main";
+const maxImageSizeBytes = 2 * 1024 * 1024;
 
 function withContentDefaults(content: Partial<WeddingContent>): WeddingContent {
   return {
@@ -31,6 +32,88 @@ function withContentDefaults(content: Partial<WeddingContent>): WeddingContent {
     location: { ...defaultContent.location, ...content.location },
     gallery: { ...defaultContent.gallery, ...content.gallery }
   };
+}
+
+function getStoragePathFromPublicUrl(url?: string) {
+  if (!url) return null;
+
+  try {
+    const parsedUrl = new URL(url);
+    const marker = `/storage/v1/object/public/${storageBucket}/`;
+    const markerIndex = parsedUrl.pathname.indexOf(marker);
+
+    if (markerIndex === -1) return null;
+
+    return decodeURIComponent(parsedUrl.pathname.slice(markerIndex + marker.length));
+  } catch {
+    return null;
+  }
+}
+
+async function compressImage(file: File) {
+  if (file.size <= maxImageSizeBytes) return file;
+
+  const image = await loadImage(file);
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  if (!context) return file;
+
+  const longestSide = Math.max(image.width, image.height);
+  let scale = Math.min(1, 2200 / longestSide);
+  const baseName = file.name.replace(/\.[^.]+$/, "");
+  let quality = 0.86;
+  let blob: Blob;
+
+  do {
+    canvas.width = Math.max(1, Math.round(image.width * scale));
+    canvas.height = Math.max(1, Math.round(image.height * scale));
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+    quality = 0.86;
+    blob = await canvasToBlob(canvas, quality);
+
+    while (blob.size > maxImageSizeBytes && quality > 0.42) {
+      quality -= 0.08;
+      blob = await canvasToBlob(canvas, quality);
+    }
+
+    if (blob.size <= maxImageSizeBytes) break;
+    scale *= 0.82;
+  } while (blob.size > maxImageSizeBytes && Math.max(canvas.width, canvas.height) > 720);
+
+  return new File([blob], `${baseName}.jpg`, { type: "image/jpeg", lastModified: Date.now() });
+}
+
+function loadImage(file: File) {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      resolve(image);
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Gambar gagal dibaca."));
+    };
+    image.src = objectUrl;
+  });
+}
+
+function canvasToBlob(canvas: HTMLCanvasElement, quality: number) {
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error("Gambar gagal dikompres."));
+      },
+      "image/jpeg",
+      quality
+    );
+  });
 }
 
 export default function DashboardPage() {
@@ -112,15 +195,24 @@ export default function DashboardPage() {
     window.setTimeout(() => setStatus(""), 3200);
   }
 
-  async function uploadAsset(event: ChangeEvent<HTMLInputElement>, onUploaded: (url: string) => void) {
+  async function uploadAsset(event: ChangeEvent<HTMLInputElement>, onUploaded: (url: string) => void, previousUrl?: string) {
     const file = event.target.files?.[0];
     if (!file || !supabase) return;
 
     setStatusType("info");
-    setStatus("Mengunggah file...");
-    const safeName = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-");
+    setStatus(file.type.startsWith("image/") ? "Mengompres dan mengunggah gambar..." : "Mengunggah file...");
+
+    let uploadFile: File;
+    try {
+      uploadFile = file.type.startsWith("image/") ? await compressImage(file) : file;
+    } catch (error) {
+      setStatusType("error");
+      setStatus(error instanceof Error ? error.message : "File gagal diproses.");
+      return;
+    }
+    const safeName = uploadFile.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-");
     const path = `${Date.now()}-${safeName}`;
-    const { error } = await supabase.storage.from(storageBucket).upload(path, file, { upsert: true });
+    const { error } = await supabase.storage.from(storageBucket).upload(path, uploadFile, { upsert: true });
 
     if (error) {
       setStatusType("error");
@@ -130,9 +222,16 @@ export default function DashboardPage() {
 
     const { data } = supabase.storage.from(storageBucket).getPublicUrl(path);
     onUploaded(data.publicUrl);
+
+    const previousPath = getStoragePathFromPublicUrl(previousUrl);
+    if (previousPath && previousPath !== path) {
+      await supabase.storage.from(storageBucket).remove([previousPath]);
+    }
+
     setStatusType("success");
     setStatus("File berhasil diunggah.");
     window.setTimeout(() => setStatus(""), 3200);
+    event.target.value = "";
   }
 
   function updatePerson(type: "bride" | "groom", patch: Partial<BrideGroom>) {
@@ -191,11 +290,21 @@ export default function DashboardPage() {
           <Panel id="hero" title="Landing Page">
             <Field label="URL Foto Background">
               <input className="admin-input" value={content.heroImageUrl} onChange={(event) => setContent({ ...content, heroImageUrl: event.target.value })} />
-              <Uploader accept="image/*" onChange={(event) => uploadAsset(event, (url) => setContent((current) => ({ ...current, heroImageUrl: url })))} />
+              <Uploader
+                accept="image/*"
+                onChange={(event) =>
+                  uploadAsset(event, (url) => setContent((current) => ({ ...current, heroImageUrl: url })), content.heroImageUrl)
+                }
+              />
             </Field>
             <Field label="URL Lagu Latar">
               <input className="admin-input" value={content.musicUrl} onChange={(event) => setContent({ ...content, musicUrl: event.target.value })} />
-              <Uploader accept="audio/*" onChange={(event) => uploadAsset(event, (url) => setContent((current) => ({ ...current, musicUrl: url })))} />
+              <Uploader
+                accept="audio/*"
+                onChange={(event) =>
+                  uploadAsset(event, (url) => setContent((current) => ({ ...current, musicUrl: url })), content.musicUrl)
+                }
+              />
             </Field>
           </Panel>
 
@@ -216,8 +325,18 @@ export default function DashboardPage() {
               <textarea rows={4} className="admin-input" value={content.invitationText} onChange={(event) => setContent({ ...content, invitationText: event.target.value })} />
             </Field>
             <div className="grid gap-5 xl:grid-cols-2">
-              <PersonEditor title="Mempelai Wanita" person={content.couple.bride} onChange={(patch) => updatePerson("bride", patch)} onUpload={(event) => uploadAsset(event, (url) => updatePerson("bride", { photoUrl: url }))} />
-              <PersonEditor title="Mempelai Pria" person={content.couple.groom} onChange={(patch) => updatePerson("groom", patch)} onUpload={(event) => uploadAsset(event, (url) => updatePerson("groom", { photoUrl: url }))} />
+              <PersonEditor
+                title="Mempelai Wanita"
+                person={content.couple.bride}
+                onChange={(patch) => updatePerson("bride", patch)}
+                onUpload={(event) => uploadAsset(event, (url) => updatePerson("bride", { photoUrl: url }), content.couple.bride.photoUrl)}
+              />
+              <PersonEditor
+                title="Mempelai Pria"
+                person={content.couple.groom}
+                onChange={(patch) => updatePerson("groom", patch)}
+                onUpload={(event) => uploadAsset(event, (url) => updatePerson("groom", { photoUrl: url }), content.couple.groom.photoUrl)}
+              />
             </div>
           </Panel>
 
@@ -319,7 +438,7 @@ export default function DashboardPage() {
                     <Uploader
                       accept="image/*"
                       onChange={(event) =>
-                        uploadAsset(event, (url) => update({ ...image, imageUrl: url }))
+                        uploadAsset(event, (url) => update({ ...image, imageUrl: url }), image.imageUrl)
                       }
                     />
                     <input
