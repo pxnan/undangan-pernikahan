@@ -67,3 +67,9 @@ on storage.objects for update
 to authenticated
 using (bucket_id = 'wedding-assets')
 with check (bucket_id = 'wedding-assets');
+
+drop policy if exists "Authenticated admin can delete wedding assets" on storage.objects;
+create policy "Authenticated admin can delete wedding assets"
+on storage.objects for delete
+to authenticated
+using (bucket_id = 'wedding-assets');

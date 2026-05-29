@@ -225,7 +225,12 @@ export default function DashboardPage() {
 
     const previousPath = getStoragePathFromPublicUrl(previousUrl);
     if (previousPath && previousPath !== path) {
-      await supabase.storage.from(storageBucket).remove([previousPath]);
+      const { error: removeError } = await supabase.storage.from(storageBucket).remove([previousPath]);
+      if (removeError) {
+        setStatusType("error");
+        setStatus(`File baru berhasil diunggah, tetapi file lama gagal dihapus: ${removeError.message}`);
+        return;
+      }
     }
 
     setStatusType("success");
