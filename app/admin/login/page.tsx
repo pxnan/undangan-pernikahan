@@ -37,8 +37,7 @@ export default function AdminLoginPage() {
     <main className="grid min-h-screen place-items-center bg-blush-50 px-4">
       <form onSubmit={handleLogin} className="w-full max-w-md rounded-lg bg-white p-8 shadow-soft">
         <p className="text-sm font-semibold uppercase tracking-[0.22em] text-blush-500">Admin</p>
-        <h1 className="mt-3 font-display text-4xl text-gray-800">Masuk Dashboard</h1>
-        <p className="mt-3 text-gray-500">Gunakan akun Supabase Auth yang sudah dibuat untuk pengelola undangan.</p>
+        <h1 className="mt-3 font-display text-4xl text-gray-800">Dashboard</h1>
 
         <label className="mt-8 block text-sm font-semibold text-gray-700">Email</label>
         <div className="mt-2 flex items-center gap-2 rounded-lg border border-gray-200 px-3 focus-within:border-blush-400">
