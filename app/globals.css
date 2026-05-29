@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --font-display: Georgia, "Times New Roman", serif;
+  --font-sans: "Segoe UI", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-color: #ef7fa6 #fff7fa;
+  scrollbar-width: thin;
+}
+
+body {
+  margin: 0;
+  background: #fff7fa;
+  color: #3d3740;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fff7fa;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #f7a9c3, #dd5f8c);
+  border: 2px solid #fff7fa;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #ef7fa6, #bf426f);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 700ms ease, transform 700ms ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(18px);
+}
+
+.curtain-panel {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.16), transparent 18%, rgba(180, 45, 92, 0.12) 36%, transparent 56%, rgba(255, 255, 255, 0.14) 82%, transparent),
+    linear-gradient(180deg, #ffd3e2 0%, #ef7fa6 48%, #bf426f 100%);
+  box-shadow: inset 0 0 48px rgba(120, 24, 60, 0.22);
+}
+
+.curtain-left {
+  transform: translateX(0);
+  transition: transform 1200ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.curtain-right {
+  transform: translateX(0);
+  transition: transform 1200ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.curtain-open .curtain-left {
+  transform: translateX(-105%);
+}
+
+.curtain-open .curtain-right {
+  transform: translateX(105%);
+}
+
+.curtain-button {
+  animation: invitation-nudge 1.8s ease-in-out infinite;
+}
+
+@keyframes invitation-nudge {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  18% {
+    transform: translateY(-4px) scale(1.02);
+  }
+  34% {
+    transform: translateY(0) scale(1);
+  }
+  48% {
+    transform: translateY(-2px) scale(1.01);
+  }
+  64% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.admin-input {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #e7dfe4;
+  background: #fff;
+  padding: 0.75rem 0.9rem;
+  color: #3d3740;
+  outline: none;
+}
+
+.admin-input:focus {
+  border-color: #ef7fa6;
+  box-shadow: 0 0 0 3px rgba(239, 127, 166, 0.2);
+}
+
+.section-shell {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .section-shell {
+    width: min(100% - 24px, 1120px);
+  }
+}
