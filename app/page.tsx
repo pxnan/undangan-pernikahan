@@ -7,6 +7,7 @@ import {
   Gift,
   Heart,
   ImageIcon,
+  Instagram,
   MapPin,
   Pause,
   Play,
@@ -504,6 +505,15 @@ export default function Home() {
           <p className="mt-10 font-display text-4xl text-blush-200">
             {content.couple.bride.shortName} & {content.couple.groom.shortName}
           </p>
+          <a
+            href="https://www.instagram.com/pxnan_/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-flex items-center gap-2 rounded-full border border-white/12 px-4 py-2 text-sm font-semibold text-white/70 transition hover:border-blush-200/50 hover:text-blush-200"
+          >
+            <Instagram size={16} />
+            created by @pxnan
+          </a>
         </div>
       </footer>
     </main>
