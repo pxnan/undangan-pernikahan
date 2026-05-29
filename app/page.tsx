@@ -320,7 +320,7 @@ export default function Home() {
       <section className="bg-white py-16 md:py-20">
         <div className="section-shell">
           <div className="reveal mx-auto max-w-3xl text-center">
-            <p className="font-display text-4xl text-gray-800 md:text-5xl">Assalamualaikum</p>
+            <p className="font-display text-4xl text-gray-800 md:text-5xl">Assalamualaikum Warahmatullahi Wabarakatuh</p>
             <p className="mt-6 text-base leading-8 text-gray-600 md:text-lg">{content.invitationText}</p>
           </div>
           <div className="mx-auto mt-14 grid max-w-5xl gap-8 md:grid-cols-2">
