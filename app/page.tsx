@@ -38,6 +38,7 @@ function withContentDefaults(content: Partial<WeddingContent>): WeddingContent {
 
 export default function Home() {
   const [content, setContent] = useState<WeddingContent>(defaultContent);
+  const [isContentReady, setIsContentReady] = useState(false);
   const [messages, setMessages] = useState<GuestMessage[]>([]);
   const [guestName, setGuestName] = useState("");
   const [guestMessage, setGuestMessage] = useState("");
@@ -80,18 +81,25 @@ export default function Home() {
 
   useEffect(() => {
     async function loadData() {
-      if (!supabase) return;
+      if (!supabase) {
+        setIsContentReady(true);
+        return;
+      }
 
-      const [{ data: contentData }, { data: messageData }] = await Promise.all([
-        supabase.from("wedding_contents").select("content").eq("id", contentId).maybeSingle(),
-        supabase
-          .from("guest_messages")
-          .select("id, guest_name, message, created_at")
-          .order("created_at", { ascending: false })
-      ]);
+      try {
+        const [{ data: contentData }, { data: messageData }] = await Promise.all([
+          supabase.from("wedding_contents").select("content").eq("id", contentId).maybeSingle(),
+          supabase
+            .from("guest_messages")
+            .select("id, guest_name, message, created_at")
+            .order("created_at", { ascending: false })
+        ]);
 
-      if (contentData?.content) setContent(withContentDefaults(contentData.content as Partial<WeddingContent>));
-      if (messageData) setMessages(messageData as GuestMessage[]);
+        if (contentData?.content) setContent(withContentDefaults(contentData.content as Partial<WeddingContent>));
+        if (messageData) setMessages(messageData as GuestMessage[]);
+      } finally {
+        setIsContentReady(true);
+      }
     }
 
     loadData();
@@ -270,9 +278,11 @@ export default function Home() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-blush-50">
+      {!isContentReady ? <InitialLoader /> : null}
+
       {content.musicUrl ? <audio ref={audioRef} src={content.musicUrl} loop /> : null}
 
-      {!isInvitationOpened ? (
+      {isContentReady && !isInvitationOpened ? (
         <CurtainLanding content={content} isOpening={isCurtainOpening} onOpen={openInvitation} />
       ) : null}
 
@@ -517,6 +527,17 @@ export default function Home() {
         </div>
       </footer>
     </main>
+  );
+}
+
+function InitialLoader() {
+  return (
+    <div className="fixed inset-0 z-[60] grid place-items-center bg-blush-50 px-4 text-center">
+      <div>
+        <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-blush-200 border-t-blush-500" />
+        <p className="mt-5 text-sm font-semibold uppercase tracking-[0.22em] text-blush-500">Memuat Undangan</p>
+      </div>
+    </div>
   );
 }
 
