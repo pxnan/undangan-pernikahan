@@ -15,6 +15,7 @@ import {
   Users
 } from "lucide-react";
 import { defaultContent } from "@/lib/defaultContent";
+import { containsProfanity } from "@/lib/profanity";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import type { GuestMessage, WeddingContent } from "@/lib/types";
 
@@ -42,7 +43,9 @@ export default function Home() {
   const [messages, setMessages] = useState<GuestMessage[]>([]);
   const [guestName, setGuestName] = useState("");
   const [guestMessage, setGuestMessage] = useState("");
+  const [messageWarning, setMessageWarning] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [isMessageConfirmOpen, setIsMessageConfirmOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isInvitationOpened, setIsInvitationOpened] = useState(false);
   const [isCurtainOpening, setIsCurtainOpening] = useState(false);
@@ -114,6 +117,25 @@ export default function Home() {
     event.preventDefault();
     if (!guestName.trim() || !guestMessage.trim()) return;
 
+    if (containsProfanity(`${guestName} ${guestMessage}`)) {
+      setMessageWarning("Ucapan mengandung bahasa yang kurang pantas. Mohon gunakan kata-kata yang lebih baik.");
+      return;
+    }
+
+    setMessageWarning("");
+    setIsMessageConfirmOpen(true);
+  }
+
+  async function sendGuestMessage() {
+    if (!guestName.trim() || !guestMessage.trim()) return;
+
+    if (containsProfanity(`${guestName} ${guestMessage}`)) {
+      setIsMessageConfirmOpen(false);
+      setMessageWarning("Ucapan mengandung bahasa yang kurang pantas. Mohon gunakan kata-kata yang lebih baik.");
+      return;
+    }
+
+    setIsMessageConfirmOpen(false);
     setIsSending(true);
     const optimisticMessage: GuestMessage = {
       id: crypto.randomUUID(),
@@ -126,6 +148,7 @@ export default function Home() {
       setMessages((current) => [optimisticMessage, ...current]);
       setGuestName("");
       setGuestMessage("");
+      setMessageWarning("");
       setIsSending(false);
       return;
     }
@@ -140,6 +163,7 @@ export default function Home() {
       setMessages((current) => [data as GuestMessage, ...current]);
       setGuestName("");
       setGuestMessage("");
+      setMessageWarning("");
     }
     setIsSending(false);
   }
@@ -304,6 +328,15 @@ export default function Home() {
       </section>
 
       <FloatingMusicButton isPlaying={isPlaying} onClick={toggleAudio} />
+      <ConfirmDialog
+        open={isMessageConfirmOpen}
+        title="Kirim Ucapan?"
+        description="Ucapan Anda akan tampil di halaman undangan setelah dikirim dan tidak dapat dihapus. Pastikan ucapan sudah benar sebelum mengirim."
+        confirmLabel={isSending ? "Mengirim..." : "Kirim Ucapan"}
+        cancelLabel="Periksa Lagi"
+        onCancel={() => setIsMessageConfirmOpen(false)}
+        onConfirm={sendGuestMessage}
+      />
 
       <section id="undangan" className="section-shell py-16 md:py-20">
         <div className="reveal mx-auto max-w-3xl text-center">
@@ -440,17 +473,28 @@ export default function Home() {
             <form onSubmit={submitMessage} className="mt-8 space-y-4">
               <input
                 value={guestName}
-                onChange={(event) => setGuestName(event.target.value)}
+                onChange={(event) => {
+                  setGuestName(event.target.value);
+                  if (messageWarning) setMessageWarning("");
+                }}
                 placeholder="Nama Anda"
                 className="admin-input"
               />
               <textarea
                 value={guestMessage}
-                onChange={(event) => setGuestMessage(event.target.value)}
+                onChange={(event) => {
+                  setGuestMessage(event.target.value);
+                  if (messageWarning) setMessageWarning("");
+                }}
                 placeholder="Tulis ucapan dan doa terbaik"
                 rows={5}
                 className="admin-input resize-none"
               />
+              {messageWarning ? (
+                <p className="rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+                  {messageWarning}
+                </p>
+              ) : null}
               <button
                 type="submit"
                 disabled={isSending}
@@ -599,6 +643,54 @@ function FloatingMusicButton({
     >
       {isPlaying ? <Pause size={20} /> : <Play size={20} />}
     </button>
+  );
+}
+
+function ConfirmDialog({
+  open,
+  title,
+  description,
+  confirmLabel,
+  cancelLabel,
+  onConfirm,
+  onCancel
+}: {
+  open: boolean;
+  title: string;
+  description: string;
+  confirmLabel: string;
+  cancelLabel: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-gray-950/45 px-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-lg border border-white bg-white p-6 text-center shadow-soft">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blush-100 text-blush-600">
+          <Send size={20} />
+        </div>
+        <h2 className="mt-5 font-display text-3xl text-gray-800">{title}</h2>
+        <p className="mt-3 leading-7 text-gray-500">{description}</p>
+        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-center">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-full bg-gray-100 px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-200"
+          >
+            {cancelLabel}
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="rounded-full bg-blush-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blush-600"
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

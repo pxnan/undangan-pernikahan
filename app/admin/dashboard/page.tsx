@@ -124,6 +124,11 @@ export default function DashboardPage() {
   const [statusType, setStatusType] = useState<"info" | "success" | "error">("info");
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<{
+    title: string;
+    description: string;
+    onConfirm: () => Promise<void> | void;
+  } | null>(null);
 
   useEffect(() => {
     async function bootstrap() {
@@ -176,6 +181,16 @@ export default function DashboardPage() {
   async function logout() {
     if (supabase) await supabase.auth.signOut();
     router.push("/admin/login");
+  }
+
+  function requestDeleteConfirmation(title: string, description: string, onConfirm: () => Promise<void> | void) {
+    setConfirmDelete({ title, description, onConfirm });
+  }
+
+  async function confirmDeleteAction() {
+    if (!confirmDelete) return;
+    await confirmDelete.onConfirm();
+    setConfirmDelete(null);
   }
 
   async function deleteMessage(id: string) {
@@ -288,6 +303,13 @@ export default function DashboardPage() {
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />
+      <ConfirmDeleteDialog
+        open={Boolean(confirmDelete)}
+        title={confirmDelete?.title ?? ""}
+        description={confirmDelete?.description ?? ""}
+        onCancel={() => setConfirmDelete(null)}
+        onConfirm={confirmDeleteAction}
+      />
 
       <div className="mx-auto grid w-full max-w-7xl gap-6 px-3 py-6 sm:px-4 sm:py-8 lg:grid-cols-[240px_1fr]">
         <div className="hidden lg:block" />
@@ -351,6 +373,9 @@ export default function DashboardPage() {
               addLabel="Tambah Acara"
               createItem={() => ({ title: "Acara Baru", date: "2026-08-22", time: "10.00 WIB", venue: "Lokasi Acara" })}
               onChange={(events) => setContent({ ...content, events })}
+              onRequestDelete={(remove) =>
+                requestDeleteConfirmation("Hapus Acara?", "Data acara ini akan dihapus dari undangan setelah Anda menyimpan perubahan.", remove)
+              }
               render={(event, index, update) => (
                 <div className="grid gap-3 md:grid-cols-2">
                   <input className="admin-input" value={event.title} onChange={(e) => update({ ...event, title: e.target.value })} placeholder="Nama acara" />
@@ -385,6 +410,9 @@ export default function DashboardPage() {
               addLabel="Tambah Kelompok Keluarga"
               createItem={() => ({ side: "Keluarga", names: ["Nama keluarga"] })}
               onChange={(families) => setContent({ ...content, families })}
+              onRequestDelete={(remove) =>
+                requestDeleteConfirmation("Hapus Keluarga?", "Kelompok keluarga ini akan dihapus dari daftar undangan setelah Anda menyimpan perubahan.", remove)
+              }
               render={(family, index, update) => (
                 <div className="space-y-3">
                   <input className="admin-input" value={family.side} onChange={(e) => update({ ...family, side: e.target.value })} />
@@ -421,6 +449,9 @@ export default function DashboardPage() {
               addLabel="Tambah Gambar"
               createItem={() => ({ imageUrl: "", caption: "Caption gallery" })}
               onChange={(images) => setContent({ ...content, gallery: { ...content.gallery, images } })}
+              onRequestDelete={(remove) =>
+                requestDeleteConfirmation("Hapus Gambar Gallery?", "Gambar ini akan dihapus dari daftar gallery setelah Anda menyimpan perubahan.", remove)
+              }
               render={(image, index, update) => (
                 <div className="grid gap-4 md:grid-cols-[160px_1fr]">
                   <div
@@ -474,7 +505,13 @@ export default function DashboardPage() {
                         </p>
                       </div>
                       <button
-                        onClick={() => deleteMessage(message.id)}
+                        onClick={() =>
+                          requestDeleteConfirmation(
+                            "Hapus Ucapan Tamu?",
+                            `Ucapan dari ${message.guest_name} akan dihapus permanen.`,
+                            () => deleteMessage(message.id)
+                          )
+                        }
                         className="inline-flex w-fit items-center gap-2 rounded-full bg-red-50 px-3 py-2 text-sm font-semibold text-red-600"
                       >
                         <Trash2 size={15} />
@@ -496,6 +533,9 @@ export default function DashboardPage() {
               addLabel="Tambah Rekening"
               createItem={() => ({ bank: "Bank", accountName: "Nama Pemilik", accountNumber: "000000" })}
               onChange={(bankAccounts) => setContent({ ...content, bankAccounts })}
+              onRequestDelete={(remove) =>
+                requestDeleteConfirmation("Hapus Rekening?", "Rekening ini akan dihapus dari undangan setelah Anda menyimpan perubahan.", remove)
+              }
               render={(account, index, update) => (
                 <div className="grid gap-3 lg:grid-cols-3">
                   <input className="admin-input" value={account.bank} onChange={(e) => update({ ...account, bank: e.target.value })} />
@@ -526,6 +566,50 @@ function Toast({ message, type }: { message: string; type: "info" | "success" | 
   return (
     <div className={`fixed bottom-5 left-1/2 z-50 w-[calc(100%-32px)] max-w-md -translate-x-1/2 rounded-lg border px-5 py-4 text-sm font-semibold shadow-soft ${style}`}>
       {message}
+    </div>
+  );
+}
+
+function ConfirmDeleteDialog({
+  open,
+  title,
+  description,
+  onConfirm,
+  onCancel
+}: {
+  open: boolean;
+  title: string;
+  description: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-[60] grid place-items-center bg-gray-950/45 px-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-lg border border-white bg-white p-6 text-center shadow-soft">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-50 text-red-600">
+          <Trash2 size={20} />
+        </div>
+        <h2 className="mt-5 font-display text-3xl text-gray-800">{title}</h2>
+        <p className="mt-3 leading-7 text-gray-500">{description}</p>
+        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-center">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-full bg-gray-100 px-5 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-200"
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="rounded-full bg-red-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-600"
+          >
+            Ya, Hapus
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -656,12 +740,14 @@ function Repeater<T extends WeddingEvent | FamilyGroup | BankAccount | GalleryIm
   addLabel,
   createItem,
   onChange,
+  onRequestDelete,
   render
 }: {
   items: T[];
   addLabel: string;
   createItem: () => T;
   onChange: (items: T[]) => void;
+  onRequestDelete: (remove: () => void) => void;
   render: (item: T, index: number, update: (item: T) => void) => React.ReactNode;
 }) {
   return (
@@ -670,7 +756,7 @@ function Repeater<T extends WeddingEvent | FamilyGroup | BankAccount | GalleryIm
         <div key={index} className="rounded-lg border border-gray-100 p-3 sm:p-4">
           <div className="mb-3 flex justify-end">
             <button
-              onClick={() => onChange(items.filter((_, itemIndex) => itemIndex !== index))}
+              onClick={() => onRequestDelete(() => onChange(items.filter((_, itemIndex) => itemIndex !== index)))}
               className="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-2 text-sm font-semibold text-red-600"
             >
               <Trash2 size={15} />
