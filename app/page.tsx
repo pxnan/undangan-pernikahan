@@ -511,10 +511,7 @@ export default function Home() {
           <div className="reveal max-h-[520px] space-y-4 overflow-y-auto pr-1 sm:pr-2">
             {messages.length ? (
               messages.map((message) => (
-                <div key={message.id} className="rounded-lg border border-blush-100 bg-blush-50 p-5 shadow-[0_14px_40px_rgba(190,66,111,0.08)]">
-                  <p className="font-semibold text-gray-800">{message.guest_name}</p>
-                  <p className="mt-2 leading-7 text-gray-600">{message.message}</p>
-                </div>
+                <GuestMessageCard key={message.id} message={message} />
               ))
             ) : (
               <div className="rounded-lg border border-blush-100 bg-blush-50 p-6 text-center text-gray-500">
@@ -571,6 +568,35 @@ export default function Home() {
         </div>
       </footer>
     </main>
+  );
+}
+
+function GuestMessageCard({ message }: { message: GuestMessage }) {
+  const initial = message.guest_name.trim().charAt(0).toUpperCase() || "T";
+
+  return (
+    <article className="relative overflow-hidden rounded-lg border border-white bg-white p-5 shadow-soft">
+      <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-blush-100/70" />
+      <div className="absolute bottom-0 left-0 h-full w-1 bg-gradient-to-b from-blush-200 via-blush-500 to-blush-100" />
+      <div className="relative flex items-start gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blush-100 font-display text-xl font-bold text-blush-600 ring-4 ring-blush-50">
+          {initial}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <p className="font-semibold text-gray-800">{message.guest_name}</p>
+            <time className="text-xs font-semibold uppercase tracking-[0.14em] text-blush-400">
+              {new Intl.DateTimeFormat("id-ID", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+              }).format(new Date(message.created_at))}
+            </time>
+          </div>
+          <p className="mt-3 leading-7 text-gray-600">"{message.message}"</p>
+        </div>
+      </div>
+    </article>
   );
 }
 
