@@ -353,7 +353,47 @@ export default function Home() {
       <section className="bg-white py-16 md:py-20">
         <div className="section-shell">
           <div className="reveal mx-auto max-w-3xl text-center">
-            <p className="font-display text-4xl text-gray-800 md:text-5xl">Assalamualaikum Warahmatullahi Wabarakatuh</p>
+            <div className="greeting-floral mx-auto">
+              <span aria-hidden="true" className="greeting-flower greeting-flower-left">
+                <span className="leaf leaf-a" />
+                <span className="leaf leaf-b" />
+                <span className="flower flower-large">
+                  <span className="petal petal-1" />
+                  <span className="petal petal-2" />
+                  <span className="petal petal-3" />
+                  <span className="petal petal-4" />
+                  <span className="flower-center" />
+                </span>
+                <span className="flower flower-small">
+                  <span className="petal petal-1" />
+                  <span className="petal petal-2" />
+                  <span className="petal petal-3" />
+                  <span className="petal petal-4" />
+                  <span className="flower-center" />
+                </span>
+              </span>
+              <p className="relative z-10 font-display text-4xl text-gray-800 md:text-5xl">
+                Assalamualaikum Warahmatullahi Wabarakatuh
+              </p>
+              <span aria-hidden="true" className="greeting-flower greeting-flower-right">
+                <span className="leaf leaf-a" />
+                <span className="leaf leaf-b" />
+                <span className="flower flower-large">
+                  <span className="petal petal-1" />
+                  <span className="petal petal-2" />
+                  <span className="petal petal-3" />
+                  <span className="petal petal-4" />
+                  <span className="flower-center" />
+                </span>
+                <span className="flower flower-small">
+                  <span className="petal petal-1" />
+                  <span className="petal petal-2" />
+                  <span className="petal petal-3" />
+                  <span className="petal petal-4" />
+                  <span className="flower-center" />
+                </span>
+              </span>
+            </div>
             <p className="mt-6 text-base leading-8 text-gray-600 md:text-lg">{content.invitationText}</p>
           </div>
           <div className="mx-auto mt-14 grid max-w-5xl gap-8 md:grid-cols-2">
@@ -632,6 +672,7 @@ function CurtainLanding({
       <div className="curtain-panel curtain-right absolute bottom-0 right-0 top-0 w-1/2" />
       <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/30 shadow-[0_0_30px_rgba(255,255,255,0.55)]" />
       <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/24 to-transparent" />
+      <FloralFrame />
 
       <div className={`relative z-10 mx-auto max-w-3xl transition duration-700 ${isOpening ? "scale-95 opacity-0" : "opacity-100"}`}>
         <p className="text-md font-semibold uppercase tracking-[0.32em] text-white/85 sm:text-xl">The Wedding of</p>
@@ -651,6 +692,38 @@ function CurtainLanding({
         </button>
       </div>
     </section>
+  );
+}
+
+function FloralFrame() {
+  const flowers = ["top-left", "top-right", "bottom-left", "bottom-right"];
+
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-3 z-[1] sm:inset-6">
+      <div className="floral-frame absolute inset-0 rounded-[28px] sm:rounded-[36px]" />
+      {flowers.map((position) => (
+        <div key={position} className={`floral-cluster floral-${position}`}>
+          <span className="leaf leaf-a" />
+          <span className="leaf leaf-b" />
+          <span className="flower flower-large">
+            <span className="petal petal-1" />
+            <span className="petal petal-2" />
+            <span className="petal petal-3" />
+            <span className="petal petal-4" />
+            <span className="flower-center" />
+          </span>
+          <span className="flower flower-small">
+            <span className="petal petal-1" />
+            <span className="petal petal-2" />
+            <span className="petal petal-3" />
+            <span className="petal petal-4" />
+            <span className="flower-center" />
+          </span>
+          <span className="bud bud-a" />
+          <span className="bud bud-b" />
+        </div>
+      ))}
+    </div>
   );
 }
 
