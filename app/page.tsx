@@ -316,7 +316,7 @@ export default function Home() {
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-blush-50" />
         <div className="relative z-10 max-w-4xl pt-12 md:pt-16">
-          <p className="reveal mb-4 text-sm uppercase tracking-[0.32em]">The Wedding of</p>
+          <p className="reveal mb-4 text-md sm:text-xl  uppercase tracking-[0.32em]">The Wedding of</p>
           <h1 className="reveal font-display text-5xl leading-tight sm:text-6xl md:text-8xl">
             {content.couple.bride.shortName} & {content.couple.groom.shortName}
           </h1>
@@ -634,7 +634,7 @@ function CurtainLanding({
       <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/24 to-transparent" />
 
       <div className={`relative z-10 mx-auto max-w-3xl transition duration-700 ${isOpening ? "scale-95 opacity-0" : "opacity-100"}`}>
-        <p className="text-xs font-semibold uppercase tracking-[0.32em] text-white/85 sm:text-sm">The Wedding of</p>
+        <p className="text-md font-semibold uppercase tracking-[0.32em] text-white/85 sm:text-xl">The Wedding of</p>
         <h1 className="mt-4 font-display text-5xl leading-tight sm:text-6xl md:text-8xl">
           {content.couple.bride.shortName} & {content.couple.groom.shortName}
         </h1>
