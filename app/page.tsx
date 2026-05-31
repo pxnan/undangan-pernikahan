@@ -639,7 +639,7 @@ function CurtainLanding({
           {content.couple.bride.shortName} & {content.couple.groom.shortName}
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-white/86 md:text-lg">
-          Dengan penuh kasih, kami mengundang Anda untuk hadir dalam hari bahagia kami.
+          Dengan penuh kasih, kami mengundang Bapak/Ibu untuk turut hadir dan memberikan doa restu di hari bahagia kami.
         </p>
         <button
           type="button"
