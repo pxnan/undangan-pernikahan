@@ -96,6 +96,18 @@ select {
   animation: invitation-nudge 1.8s ease-in-out infinite;
 }
 
+.hero-bottom-fade {
+  background: linear-gradient(
+    to top,
+    #fff7fa 0%,
+    rgba(255, 247, 250, 0.98) 12%,
+    rgba(255, 247, 250, 0.84) 28%,
+    rgba(255, 247, 250, 0.5) 56%,
+    rgba(255, 247, 250, 0.18) 78%,
+    transparent 100%
+  );
+}
+
 .floral-frame {
   border: 1px solid rgba(255, 255, 255, 0.42);
   box-shadow:

@@ -314,7 +314,7 @@ export default function Home() {
         className="relative flex min-h-[92svh] items-center justify-center bg-cover bg-center px-4 text-center text-white md:min-h-screen"
         style={{ backgroundImage: `url(${content.heroImageUrl})` }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-blush-50" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/5" />
         <div className="relative z-10 max-w-4xl pt-12 md:pt-16">
           <p className="reveal mb-4 text-md sm:text-xl  uppercase tracking-[0.32em]">The Wedding of</p>
           <h1 className="reveal font-display text-5xl leading-tight sm:text-6xl md:text-8xl">
@@ -324,7 +324,7 @@ export default function Home() {
             Dua hati, satu janji, dan doa keluarga yang mengiringi langkah baru kami.
           </p>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-blush-50 to-transparent" />
+        <div className="hero-bottom-fade absolute bottom-0 left-0 right-0 h-36 md:h-44" />
       </section>
 
       <FloatingMusicButton isPlaying={isPlaying} onClick={toggleAudio} />
