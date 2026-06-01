@@ -31,6 +31,8 @@ function withContentDefaults(content: Partial<WeddingContent>): WeddingContent {
       bride: { ...defaultContent.couple.bride, ...content.couple?.bride },
       groom: { ...defaultContent.couple.groom, ...content.couple?.groom }
     },
+    hero: { ...defaultContent.hero, ...content.hero },
+    curtain: { ...defaultContent.curtain, ...content.curtain },
     quran: { ...defaultContent.quran, ...content.quran },
     location: { ...defaultContent.location, ...content.location },
     gallery: { ...defaultContent.gallery, ...content.gallery }
@@ -316,12 +318,12 @@ export default function Home() {
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/5" />
         <div className="relative z-10 max-w-4xl pt-12 md:pt-16">
-          <p className="reveal mb-4 text-md sm:text-xl  uppercase tracking-[0.32em]">The Wedding of</p>
+          <p className="reveal mb-4 text-md sm:text-xl  uppercase tracking-[0.32em]">{content.hero.eyebrow}</p>
           <h1 className="reveal font-display text-5xl leading-tight sm:text-6xl md:text-8xl">
             {content.couple.bride.shortName} & {content.couple.groom.shortName}
           </h1>
           <p className="reveal mx-auto mt-6 max-w-2xl text-base leading-7 text-white/88 md:text-lg">
-            Dengan Rahmat Allah SWT, kami melangkah menuju ikatan suci yang dirdhai-Nya untuk mengawali perjalanan baru sebagai satu keluarga hingga menapaki Jannah-Nya.
+            {content.hero.description}
           </p>
         </div>
         <div className="hero-bottom-fade absolute bottom-0 left-0 right-0 h-36 md:h-44" />
@@ -340,6 +342,8 @@ export default function Home() {
 
       <section id="undangan" className="section-shell py-16 md:py-20">
         <div className="reveal mx-auto max-w-3xl text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.22em] text-blush-500">{content.quran.title}</p>
+          <div className="mx-auto mb-8 mt-4 h-px w-24 bg-blush-200" />
           <p className="font-display text-3xl leading-relaxed text-blush-600 md:text-5xl">
             {content.quran.arabic}
           </p>
@@ -666,7 +670,10 @@ function CurtainLanding({
         isOpening ? "curtain-open" : ""
       }`}
     >
-      <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${content.heroImageUrl})` }} />
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${content.curtain.imageUrl || content.heroImageUrl})` }}
+      />
       <div className="absolute inset-0 bg-gradient-to-b from-gray-950/55 via-gray-950/30 to-gray-950/30" />
       <div className="curtain-panel curtain-left absolute bottom-0 left-0 top-0 w-1/2" />
       <div className="curtain-panel curtain-right absolute bottom-0 right-0 top-0 w-1/2" />
@@ -675,12 +682,14 @@ function CurtainLanding({
       <FloralFrame />
 
       <div className={`relative z-10 mx-auto max-w-3xl transition duration-700 ${isOpening ? "scale-95 opacity-0" : "opacity-100"}`}>
-        <p className="text-md font-semibold uppercase tracking-[0.32em] text-white/85 sm:text-xl">The Wedding of</p>
+        <p className="text-md font-semibold uppercase tracking-[0.32em] text-white/85 sm:text-xl">
+          {content.curtain.eyebrow}
+        </p>
         <h1 className="mt-4 font-display text-5xl leading-tight sm:text-6xl md:text-8xl">
           {content.couple.bride.shortName} & {content.couple.groom.shortName}
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-base leading-7 text-white/86 md:text-lg">
-          Dengan penuh kasih, kami mengundang Bapak/Ibu untuk turut hadir dan memberikan doa restu di hari bahagia kami.
+          {content.curtain.description}
         </p>
         <button
           type="button"
@@ -688,7 +697,7 @@ function CurtainLanding({
           className="curtain-button mt-10 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-semibold text-blush-600 shadow-soft transition hover:bg-blush-50"
         >
           <Heart size={18} />
-          Buka Undangan
+          {content.curtain.buttonLabel}
         </button>
       </div>
     </section>

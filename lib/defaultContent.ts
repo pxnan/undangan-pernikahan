@@ -4,6 +4,18 @@ export const defaultContent: WeddingContent = {
   heroImageUrl:
     "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1800&q=80",
   musicUrl: "",
+  hero: {
+    eyebrow: "The Wedding of",
+    description:
+      "Dengan Rahmat Allah SWT, kami melangkah menuju ikatan suci yang dirdhai-Nya untuk mengawali perjalanan baru sebagai satu keluarga hingga menapaki Jannah-Nya."
+  },
+  curtain: {
+    imageUrl: "",
+    eyebrow: "The Wedding of",
+    description:
+      "Dengan penuh kasih, kami mengundang Bapak/Ibu untuk turut hadir dan memberikan doa restu di hari bahagia kami.",
+    buttonLabel: "Buka Undangan"
+  },
   couple: {
     bride: {
       name: "Aisyah Putri",
@@ -23,6 +35,7 @@ export const defaultContent: WeddingContent = {
     }
   },
   quran: {
+    title: "Ayat Suci Al-Quran",
     arabic: "وَمِنْ اٰيٰتِهٖٓ اَنْ خَلَقَ لَكُمْ مِّنْ اَنْفُسِكُمْ اَزْوَاجًا لِّتَسْكُنُوْٓا اِلَيْهَا",
     translation:
       "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan-pasangan dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya.",

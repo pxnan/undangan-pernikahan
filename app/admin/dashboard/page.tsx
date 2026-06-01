@@ -28,6 +28,8 @@ function withContentDefaults(content: Partial<WeddingContent>): WeddingContent {
       bride: { ...defaultContent.couple.bride, ...content.couple?.bride },
       groom: { ...defaultContent.couple.groom, ...content.couple?.groom }
     },
+    hero: { ...defaultContent.hero, ...content.hero },
+    curtain: { ...defaultContent.curtain, ...content.curtain },
     quran: { ...defaultContent.quran, ...content.quran },
     location: { ...defaultContent.location, ...content.location },
     gallery: { ...defaultContent.gallery, ...content.gallery }
@@ -324,6 +326,63 @@ export default function DashboardPage() {
                 }
               />
             </Field>
+            <Field label="Label Hero">
+              <input
+                className="admin-input"
+                value={content.hero.eyebrow}
+                onChange={(event) => setContent({ ...content, hero: { ...content.hero, eyebrow: event.target.value } })}
+              />
+            </Field>
+            <Field label="Deskripsi Hero">
+              <textarea
+                rows={3}
+                className="admin-input"
+                value={content.hero.description}
+                onChange={(event) => setContent({ ...content, hero: { ...content.hero, description: event.target.value } })}
+              />
+            </Field>
+            <Field label="URL Foto Tirai Awal">
+              <input
+                className="admin-input"
+                value={content.curtain.imageUrl}
+                onChange={(event) => setContent({ ...content, curtain: { ...content.curtain, imageUrl: event.target.value } })}
+                placeholder="Kosongkan jika ingin memakai foto background hero"
+              />
+              <Uploader
+                accept="image/*"
+                onChange={(event) =>
+                  uploadAsset(
+                    event,
+                    (url) => setContent((current) => ({ ...current, curtain: { ...current.curtain, imageUrl: url } })),
+                    content.curtain.imageUrl
+                  )
+                }
+              />
+            </Field>
+            <div className="grid gap-4 xl:grid-cols-2">
+              <Field label="Label Tirai">
+                <input
+                  className="admin-input"
+                  value={content.curtain.eyebrow}
+                  onChange={(event) => setContent({ ...content, curtain: { ...content.curtain, eyebrow: event.target.value } })}
+                />
+              </Field>
+              <Field label="Teks Tombol Tirai">
+                <input
+                  className="admin-input"
+                  value={content.curtain.buttonLabel}
+                  onChange={(event) => setContent({ ...content, curtain: { ...content.curtain, buttonLabel: event.target.value } })}
+                />
+              </Field>
+            </div>
+            <Field label="Deskripsi Tirai">
+              <textarea
+                rows={3}
+                className="admin-input"
+                value={content.curtain.description}
+                onChange={(event) => setContent({ ...content, curtain: { ...content.curtain, description: event.target.value } })}
+              />
+            </Field>
             <Field label="URL Lagu Latar">
               <input className="admin-input" value={content.musicUrl} onChange={(event) => setContent({ ...content, musicUrl: event.target.value })} />
               <Uploader
@@ -336,6 +395,9 @@ export default function DashboardPage() {
           </Panel>
 
           <Panel id="ayat" title="Ayat Al-Quran">
+            <Field label="Judul Section Ayat">
+              <input className="admin-input" value={content.quran.title} onChange={(event) => setContent({ ...content, quran: { ...content.quran, title: event.target.value } })} />
+            </Field>
             <Field label="Teks Arab">
               <textarea rows={3} className="admin-input" value={content.quran.arabic} onChange={(event) => setContent({ ...content, quran: { ...content.quran, arabic: event.target.value } })} />
             </Field>

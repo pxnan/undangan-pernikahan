@@ -32,11 +32,22 @@ export type GalleryImage = {
 export type WeddingContent = {
   heroImageUrl: string;
   musicUrl: string;
+  hero: {
+    eyebrow: string;
+    description: string;
+  };
+  curtain: {
+    imageUrl: string;
+    eyebrow: string;
+    description: string;
+    buttonLabel: string;
+  };
   couple: {
     bride: BrideGroom;
     groom: BrideGroom;
   };
   quran: {
+    title: string;
     arabic: string;
     translation: string;
     source: string;
