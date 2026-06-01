@@ -485,7 +485,7 @@ export default function Home() {
         <section className="bg-white py-16 md:py-20">
           <div className="section-shell">
             <SectionTitle icon={<ImageIcon />} eyebrow="Gallery" title={content.gallery.title} />
-            <div className="mt-10 grid auto-rows-[220px] gap-4 sm:grid-cols-2 md:grid-cols-4">
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 md:auto-rows-[220px] md:grid-cols-4">
               {content.gallery.images.map((image, index) => (
                 <figure
                   key={`${image.imageUrl}-${index}`}
@@ -493,9 +493,10 @@ export default function Home() {
                     index === 0 ? "sm:col-span-2 md:row-span-2" : ""
                   }`}
                 >
-                  <div
-                    className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-105"
-                    style={{ backgroundImage: `url(${image.imageUrl})` }}
+                  <img
+                    src={image.imageUrl}
+                    alt={image.caption || content.gallery.title}
+                    className="block h-auto w-full transition duration-700 group-hover:scale-105 md:absolute md:inset-0 md:h-full md:object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-950/55 via-transparent to-transparent" />
                   {image.caption ? (
