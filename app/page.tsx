@@ -321,7 +321,7 @@ export default function Home() {
             {content.couple.bride.shortName} & {content.couple.groom.shortName}
           </h1>
           <p className="reveal mx-auto mt-6 max-w-2xl text-base leading-7 text-white/88 md:text-lg">
-            Dua hati, satu janji, dan doa keluarga yang mengiringi langkah baru kami.
+            Dengan Rahmat Allah SWT, kami melangkah menuju ikatan suci yang dirdhai-Nya untuk mengawali perjalanan baru sebagai satu keluarga hingga menapaki Jannah-Nya.
           </p>
         </div>
         <div className="hero-bottom-fade absolute bottom-0 left-0 right-0 h-36 md:h-44" />
