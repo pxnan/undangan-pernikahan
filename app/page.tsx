@@ -318,11 +318,11 @@ export default function Home() {
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/20 to-black/5" />
         <div className="relative z-10 max-w-4xl pt-12 md:pt-16">
-          <p className="reveal mb-4 text-md sm:text-xl  uppercase tracking-[0.32em]">{content.hero.eyebrow}</p>
+          <p className="reveal mb-2 text-md uppercase tracking-[0.22em] sm:text-xl">{content.hero.eyebrow}</p>
           <h1 className="reveal font-display text-5xl leading-tight sm:text-6xl md:text-8xl">
             {content.couple.bride.shortName} & {content.couple.groom.shortName}
           </h1>
-          <p className="reveal mx-auto mt-6 max-w-2xl text-base leading-7 text-white/88 md:text-lg">
+          <p className="reveal mx-auto mt-4 max-w-2xl text-base leading-7 text-white/88 md:mt-5 md:text-lg">
             {content.hero.description}
           </p>
         </div>
@@ -376,7 +376,7 @@ export default function Home() {
                   <span className="flower-center" />
                 </span>
               </span>
-              <p className="relative z-10 font-display text-4xl text-gray-800 md:text-5xl">
+              <p className="relative z-10 font-display text-3xl leading-tight text-gray-800 sm:text-4xl md:text-5xl">
                 Assalamualaikum Warahmatullahi Wabarakatuh
               </p>
               <span aria-hidden="true" className="greeting-flower greeting-flower-right">
@@ -806,7 +806,7 @@ function ConfirmDialog({
 function CoupleCard({ person }: { person: WeddingContent["couple"]["bride"] }) {
   return (
     <article className="reveal overflow-hidden rounded-lg border border-white bg-white p-2 shadow-soft sm:p-3">
-      <div className="relative h-80 overflow-hidden rounded-lg bg-cover bg-center sm:h-96" style={{ backgroundImage: `url(${person.photoUrl})` }}>
+      <div className="relative aspect-[3/4] overflow-hidden rounded-lg bg-cover bg-center" style={{ backgroundImage: `url(${person.photoUrl})` }}>
         <div className="absolute inset-0 bg-gradient-to-t from-gray-950/35 via-transparent to-transparent" />
       </div>
       <div className="px-4 pb-7 pt-6 text-center sm:px-6">

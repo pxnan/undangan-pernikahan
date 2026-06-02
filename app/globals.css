@@ -360,13 +360,13 @@ select {
   }
 
   .greeting-floral {
-    padding: 1.5rem 3.25rem;
+    padding: 1.35rem 2.7rem;
   }
 
   .greeting-flower {
     top: 50%;
-    width: 58px;
-    height: 58px;
+    width: 46px;
+    height: 46px;
     transform: translateY(-50%);
   }
 
@@ -378,5 +378,17 @@ select {
   .greeting-flower-right {
     right: 0;
     transform: translateY(-50%) scaleX(-1) rotate(-12deg);
+  }
+}
+
+@media (max-width: 380px) {
+  .greeting-floral {
+    padding-left: 2.35rem;
+    padding-right: 2.35rem;
+  }
+
+  .greeting-flower {
+    width: 40px;
+    height: 40px;
   }
 }
