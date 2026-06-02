@@ -22,13 +22,16 @@ import type { GuestMessage, WeddingContent } from "@/lib/types";
 const contentId = "main";
 
 function getMapQuery(location: WeddingContent["location"]) {
+  const addressQuery = [location.title.trim(), location.address.trim()].filter(Boolean).join(", ");
   const latitude = location.latitude.trim();
   const longitude = location.longitude.trim();
   const latitudeNumber = Number(latitude);
   const longitudeNumber = Number(longitude);
+  const isZeroCoordinate = latitudeNumber === 0 && longitudeNumber === 0;
   const hasValidCoordinates =
     Number.isFinite(latitudeNumber) &&
     Number.isFinite(longitudeNumber) &&
+    !isZeroCoordinate &&
     latitudeNumber >= -90 &&
     latitudeNumber <= 90 &&
     longitudeNumber >= -180 &&
@@ -36,7 +39,7 @@ function getMapQuery(location: WeddingContent["location"]) {
 
   if (hasValidCoordinates) return `${latitudeNumber},${longitudeNumber}`;
 
-  return [location.title, location.address].filter(Boolean).join(", ");
+  return addressQuery;
 }
 
 function withContentDefaults(content: Partial<WeddingContent>): WeddingContent {
@@ -131,7 +134,10 @@ export default function Home() {
   const mapQuery = useMemo(() => getMapQuery(content.location), [content.location]);
   const encodedMapQuery = useMemo(() => encodeURIComponent(mapQuery), [mapQuery]);
   const mapUrl = useMemo(
-    () => (mapQuery ? `https://www.google.com/maps?q=${encodedMapQuery}&z=16&output=embed` : ""),
+    () =>
+      mapQuery
+        ? `https://maps.google.com/maps?f=q&source=s_q&hl=id&q=${encodedMapQuery}&z=16&output=embed`
+        : "",
     [encodedMapQuery, mapQuery]
   );
 
