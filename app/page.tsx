@@ -22,21 +22,25 @@ import type { GuestMessage, WeddingContent } from "@/lib/types";
 const contentId = "main";
 
 function getMapQuery(location: WeddingContent["location"]) {
+  const addressQuery = [location.title.trim(), location.address.trim()].filter(Boolean).join(", ");
   const latitude = location.latitude.trim();
   const longitude = location.longitude.trim();
   const latitudeNumber = Number(latitude);
   const longitudeNumber = Number(longitude);
+  const isZeroCoordinate = latitudeNumber === 0 && longitudeNumber === 0;
   const hasValidCoordinates =
     Number.isFinite(latitudeNumber) &&
     Number.isFinite(longitudeNumber) &&
+    !isZeroCoordinate &&
     latitudeNumber >= -90 &&
     latitudeNumber <= 90 &&
     longitudeNumber >= -180 &&
     longitudeNumber <= 180;
 
+  if (addressQuery) return addressQuery;
   if (hasValidCoordinates) return `${latitudeNumber},${longitudeNumber}`;
 
-  return [location.title, location.address].filter(Boolean).join(", ");
+  return "";
 }
 
 function withContentDefaults(content: Partial<WeddingContent>): WeddingContent {
@@ -475,19 +479,12 @@ export default function Home() {
             ) : null}
           </div>
           {mapUrl ? (
-            <div className="reveal relative rounded-lg border border-white bg-white p-3 shadow-soft">
+            <div className="reveal rounded-lg border border-white bg-white p-3 shadow-soft">
               <iframe
                 title="Google Maps"
                 src={mapUrl}
-                className="h-[300px] w-full rounded-lg border-0 pointer-events-none md:h-[360px] md:pointer-events-auto"
+                className="h-[300px] w-full rounded-lg border-0 md:h-[360px]"
                 loading="lazy"
-              />
-              <a
-                href={mapLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Buka lokasi di Google Maps"
-                className="absolute inset-3 z-10 md:hidden"
               />
             </div>
           ) : null}
