@@ -464,6 +464,10 @@ export default function DashboardPage() {
                 <input className="admin-input" value={content.location.longitude} onChange={(event) => setContent({ ...content, location: { ...content.location, longitude: event.target.value } })} />
               </Field>
             </div>
+            <p className="rounded-lg bg-blush-50 p-4 text-sm leading-6 text-gray-500">
+              Gunakan angka desimal untuk latitude dan longitude, misalnya -6.200000 dan 106.816666. Jika koordinat
+              kosong atau tidak valid, maps akan memakai nama lokasi dan alamat.
+            </p>
           </Panel>
 
           <Panel id="keluarga" title="Daftar Keluarga">

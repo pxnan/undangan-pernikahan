@@ -21,6 +21,24 @@ import type { GuestMessage, WeddingContent } from "@/lib/types";
 
 const contentId = "main";
 
+function getMapQuery(location: WeddingContent["location"]) {
+  const latitude = location.latitude.trim();
+  const longitude = location.longitude.trim();
+  const latitudeNumber = Number(latitude);
+  const longitudeNumber = Number(longitude);
+  const hasValidCoordinates =
+    Number.isFinite(latitudeNumber) &&
+    Number.isFinite(longitudeNumber) &&
+    latitudeNumber >= -90 &&
+    latitudeNumber <= 90 &&
+    longitudeNumber >= -180 &&
+    longitudeNumber <= 180;
+
+  if (hasValidCoordinates) return `${latitudeNumber},${longitudeNumber}`;
+
+  return [location.title, location.address].filter(Boolean).join(", ");
+}
+
 function withContentDefaults(content: Partial<WeddingContent>): WeddingContent {
   return {
     ...defaultContent,
@@ -110,10 +128,12 @@ export default function Home() {
     loadData();
   }, []);
 
-  const mapUrl = useMemo(() => {
-    const { latitude, longitude } = content.location;
-    return `https://maps.google.com/maps?q=${latitude},${longitude}&z=16&output=embed`;
-  }, [content.location]);
+  const mapQuery = useMemo(() => getMapQuery(content.location), [content.location]);
+  const encodedMapQuery = useMemo(() => encodeURIComponent(mapQuery), [mapQuery]);
+  const mapUrl = useMemo(
+    () => (mapQuery ? `https://www.google.com/maps?q=${encodedMapQuery}&z=16&output=embed` : ""),
+    [encodedMapQuery, mapQuery]
+  );
 
   async function submitMessage(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -438,23 +458,27 @@ export default function Home() {
           <div className="reveal">
             <SectionTitle icon={<MapPin />} eyebrow="Lokasi" title={content.location.title} align="left" />
             <p className="mt-6 text-lg leading-8 text-gray-600">{content.location.address}</p>
-            <a
-              href={`https://www.google.com/maps/search/?api=1&query=${content.location.latitude},${content.location.longitude}`}
-              target="_blank"
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-blush-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blush-600"
-            >
-              <MapPin size={18} />
-              Buka Maps
-            </a>
+            {mapQuery ? (
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodedMapQuery}`}
+                target="_blank"
+                className="mt-8 inline-flex items-center gap-2 rounded-full bg-blush-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blush-600"
+              >
+                <MapPin size={18} />
+                Buka Maps
+              </a>
+            ) : null}
           </div>
-          <div className="reveal rounded-lg border border-white bg-white p-3 shadow-soft">
-            <iframe
-              title="Google Maps"
-              src={mapUrl}
-              className="h-[300px] w-full rounded-lg border-0 md:h-[360px]"
-              loading="lazy"
-            />
-          </div>
+          {mapUrl ? (
+            <div className="reveal rounded-lg border border-white bg-white p-3 shadow-soft">
+              <iframe
+                title="Google Maps"
+                src={mapUrl}
+                className="h-[300px] w-full rounded-lg border-0 md:h-[360px]"
+                loading="lazy"
+              />
+            </div>
+          ) : null}
         </div>
       </section>
 
