@@ -22,25 +22,21 @@ import type { GuestMessage, WeddingContent } from "@/lib/types";
 const contentId = "main";
 
 function getMapQuery(location: WeddingContent["location"]) {
-  const addressQuery = [location.title.trim(), location.address.trim()].filter(Boolean).join(", ");
   const latitude = location.latitude.trim();
   const longitude = location.longitude.trim();
   const latitudeNumber = Number(latitude);
   const longitudeNumber = Number(longitude);
-  const isZeroCoordinate = latitudeNumber === 0 && longitudeNumber === 0;
   const hasValidCoordinates =
     Number.isFinite(latitudeNumber) &&
     Number.isFinite(longitudeNumber) &&
-    !isZeroCoordinate &&
     latitudeNumber >= -90 &&
     latitudeNumber <= 90 &&
     longitudeNumber >= -180 &&
     longitudeNumber <= 180;
 
-  if (addressQuery) return addressQuery;
   if (hasValidCoordinates) return `${latitudeNumber},${longitudeNumber}`;
 
-  return "";
+  return [location.title, location.address].filter(Boolean).join(", ");
 }
 
 function withContentDefaults(content: Partial<WeddingContent>): WeddingContent {
@@ -135,11 +131,7 @@ export default function Home() {
   const mapQuery = useMemo(() => getMapQuery(content.location), [content.location]);
   const encodedMapQuery = useMemo(() => encodeURIComponent(mapQuery), [mapQuery]);
   const mapUrl = useMemo(
-    () => (mapQuery ? `https://maps.google.com/maps?q=${encodedMapQuery}&hl=id&z=16&iwloc=B&output=embed` : ""),
-    [encodedMapQuery, mapQuery]
-  );
-  const mapLink = useMemo(
-    () => (mapQuery ? `https://www.google.com/maps/search/?api=1&query=${encodedMapQuery}` : ""),
+    () => (mapQuery ? `https://www.google.com/maps?q=${encodedMapQuery}&z=16&output=embed` : ""),
     [encodedMapQuery, mapQuery]
   );
 
@@ -468,9 +460,8 @@ export default function Home() {
             <p className="mt-6 text-lg leading-8 text-gray-600">{content.location.address}</p>
             {mapQuery ? (
               <a
-                href={mapLink}
+                href={`https://www.google.com/maps/search/?api=1&query=${encodedMapQuery}`}
                 target="_blank"
-                rel="noopener noreferrer"
                 className="mt-8 inline-flex items-center gap-2 rounded-full bg-blush-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blush-600"
               >
                 <MapPin size={18} />
