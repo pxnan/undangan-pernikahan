@@ -131,7 +131,11 @@ export default function Home() {
   const mapQuery = useMemo(() => getMapQuery(content.location), [content.location]);
   const encodedMapQuery = useMemo(() => encodeURIComponent(mapQuery), [mapQuery]);
   const mapUrl = useMemo(
-    () => (mapQuery ? `https://www.google.com/maps?q=${encodedMapQuery}&z=16&output=embed` : ""),
+    () => (mapQuery ? `https://maps.google.com/maps?q=${encodedMapQuery}&hl=id&z=16&iwloc=B&output=embed` : ""),
+    [encodedMapQuery, mapQuery]
+  );
+  const mapLink = useMemo(
+    () => (mapQuery ? `https://www.google.com/maps/search/?api=1&query=${encodedMapQuery}` : ""),
     [encodedMapQuery, mapQuery]
   );
 
@@ -460,8 +464,9 @@ export default function Home() {
             <p className="mt-6 text-lg leading-8 text-gray-600">{content.location.address}</p>
             {mapQuery ? (
               <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodedMapQuery}`}
+                href={mapLink}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="mt-8 inline-flex items-center gap-2 rounded-full bg-blush-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blush-600"
               >
                 <MapPin size={18} />
@@ -470,12 +475,19 @@ export default function Home() {
             ) : null}
           </div>
           {mapUrl ? (
-            <div className="reveal rounded-lg border border-white bg-white p-3 shadow-soft">
+            <div className="reveal relative rounded-lg border border-white bg-white p-3 shadow-soft">
               <iframe
                 title="Google Maps"
                 src={mapUrl}
-                className="h-[300px] w-full rounded-lg border-0 md:h-[360px]"
+                className="h-[300px] w-full rounded-lg border-0 pointer-events-none md:h-[360px] md:pointer-events-auto"
                 loading="lazy"
+              />
+              <a
+                href={mapLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Buka lokasi di Google Maps"
+                className="absolute inset-3 z-10 md:hidden"
               />
             </div>
           ) : null}
